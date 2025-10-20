@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use std::io::BufReader;
 use std::fs::File;
 use csv::ReaderBuilder;
+use chrono::NaiveDate;
 use super::data_vectors::SiteVecs;
 use log::info;
 
@@ -50,8 +51,8 @@ pub struct SiteRec {
     pub aline3: String,
     pub city: String,
     pub postcode: String,
-    pub open_date: String,
-    pub close_date: String, 
+    pub open_date: Option<NaiveDate>,
+    pub close_date: Option<NaiveDate>, 
     pub subtype_code: String,
     pub parent_org: String,
 }
@@ -76,6 +77,18 @@ pub async fn import_site_data(data_folder: &PathBuf, source_file_name: &str, poo
     
         let source: SiteLine = result?;
 
+        let opened = match NaiveDate::parse_from_str(&source.open_date, "%Y%m%d")
+        {
+            Ok(d) => Some(d),
+            Err(_) => None,
+        };
+
+        let closed = match NaiveDate::parse_from_str(&source.close_date, "%Y%m%d")
+        {
+            Ok(d) => Some(d),
+            Err(_) => None,
+        };
+        
         let site_rec = SiteRec {
             ods_code: source.ods_code,
             ods_name: source.ods_name,
@@ -86,8 +99,8 @@ pub async fn import_site_data(data_folder: &PathBuf, source_file_name: &str, poo
             aline3: source.aline3,
             city: source.aline4,
             postcode: source.postcode,
-            open_date: source.open_date,
-            close_date: source.close_date,
+            open_date: opened,
+            close_date: closed,
             subtype_code: source.subtype_code,
             parent_org: source.parent_org,
         };

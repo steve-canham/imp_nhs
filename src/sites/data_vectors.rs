@@ -1,6 +1,7 @@
 use super::import::SiteRec;
 use crate::AppError;
 use sqlx::{postgres::PgQueryResult, Pool, Postgres};
+use chrono::NaiveDate;
 
 pub struct SiteVecs {
     pub codes: Vec<String>,
@@ -12,8 +13,8 @@ pub struct SiteVecs {
     pub aline3s: Vec<String>,
     pub cities: Vec<String>,
     pub postcodes: Vec<String>,
-    pub open_dates: Vec<String>,
-    pub close_dates: Vec<String>,
+    pub open_dates: Vec<Option<NaiveDate>>,
+    pub close_dates: Vec<Option<NaiveDate>>,
     pub subtype_codes: Vec<String>,
     pub parent_orgs: Vec<String>,
 }
@@ -62,7 +63,7 @@ impl SiteVecs{
         let sql = r#"INSERT INTO src.sites (ods_code, ods_name, grouping, health_geog, 
                       aline1, aline2, aline3, city, postcode, open_date, close_date, subtype_code, parent_org) 
             SELECT * FROM UNNEST($1::text[], $2::text[], $3::text[], $4::text[], $5::text[], 
-                $6::text[], $7::text[], $8::text[], $9::text[], $10::text[], $11::text[], $12::text[], $13::text[]);"#;
+                $6::text[], $7::text[], $8::text[], $9::text[], $10::date[], $11::date[], $12::text[], $13::text[]);"#;
 
         sqlx::query(&sql)
         .bind(&self.codes).bind(&self.names).bind(&self.groupings).bind(&self.health_geogs)
