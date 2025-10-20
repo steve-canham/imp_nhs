@@ -3,6 +3,7 @@ pub mod setup;
 pub mod err;
 mod orgs;
 mod sites;
+mod utils;
 
 
 use setup::cli_reader;

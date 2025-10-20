@@ -1,5 +1,7 @@
-use sqlx::{Pool, Postgres};
 use crate::AppError;
+use crate::utils;
+
+use sqlx::{Pool, Postgres};
 use std::path::PathBuf;
 use std::io::BufReader;
 use std::fs::File;
@@ -46,11 +48,9 @@ pub struct SiteRec {
     pub ods_name: String,
     pub grouping: String,
     pub health_geog : String,
-    pub aline1: String,
-    pub aline2: String,
-    pub aline3: String,
     pub city: String,
-    pub postcode: String,
+    pub post_code: String,
+    pub postal_add: String,
     pub open_date: Option<NaiveDate>,
     pub close_date: Option<NaiveDate>, 
     pub subtype_code: String,
@@ -77,34 +77,31 @@ pub async fn import_site_data(data_folder: &PathBuf, source_file_name: &str, poo
     
         let source: SiteLine = result?;
 
-        let opened = match NaiveDate::parse_from_str(&source.open_date, "%Y%m%d")
-        {
-            Ok(d) => Some(d),
-            Err(_) => None,
+        let mut site_name =  utils::capitalise_words(&source.ods_name);
+        if site_name.contains('(') {
+            site_name = utils::repair_brackets(&site_name)
         };
+        site_name = utils::repair_site_name(&site_name);
 
-        let closed = match NaiveDate::parse_from_str(&source.close_date, "%Y%m%d")
-        {
-            Ok(d) => Some(d),
-            Err(_) => None,
-        };
+        let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
+                                                        &source.aline3, &source.aline4, &source.postcode);        
+        
+        let opened = utils::convert_to_date(&source.open_date);
+        let closed = utils::convert_to_date(&source.close_date);
         
         let site_rec = SiteRec {
             ods_code: source.ods_code,
-            ods_name: source.ods_name,
+            ods_name: site_name,
             grouping: source.grouping,
             health_geog: source.health_geog,
-            aline1: source.aline1,
-            aline2: source.aline2,
-            aline3: source.aline3,
-            city: source.aline4,
-            postcode: source.postcode,
+            city: cap_city,
+            post_code: source.postcode,
+            postal_add: postal_address,
             open_date: opened,
             close_date: closed,
             subtype_code: source.subtype_code,
             parent_org: source.parent_org,
         };
-
 
         dv.add_data(&site_rec);   // transfer data to vectors
         i +=1;    

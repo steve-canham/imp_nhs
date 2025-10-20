@@ -1,5 +1,8 @@
-use sqlx::{Pool, Postgres};
+
 use crate::AppError;
+use crate::utils;
+
+use sqlx::{Pool, Postgres};
 use std::path::PathBuf;
 use std::io::BufReader;
 use std::fs::File;
@@ -72,39 +75,19 @@ pub async fn import_org_data(data_folder: &PathBuf, source_file_name: &str, pool
     
         let source: OrgLine = result?;
 
-        let cap_name =  capitalise_words(&source.ods_name);
-        let cap_city = capitalise_words(&source.aline4);
-
-        let a1 =  capitalise_words(&source.aline1);
-        let a2 =  capitalise_words(&source.aline2);
-        let a3 =  capitalise_words(&source.aline3);
-
-
-        let b = if a2 == "" {""} else {&(", ".to_string() + &a2)};
-        let c = if a3 == "" {""} else {&(", ".to_string() + &a3)};
-        let d = if cap_city == "" {""} else {&(", ".to_string() + & cap_city)};
-        let e = if source.postcode == "" {""} else {&(", ".to_string() + &source.postcode)};
-        let postal_add = a1 + b + c + d + e;
-
-        let opened = match NaiveDate::parse_from_str(&source.open_date, "%Y%m%d")
-        {
-            Ok(d) => Some(d),
-            Err(_) => None,
-        };
-
-        let closed = match NaiveDate::parse_from_str(&source.close_date, "%Y%m%d")
-        {
-            Ok(d) => Some(d),
-            Err(_) => None,
-        };
-
-
+        let cap_name =  utils::capitalise_words(&source.ods_name);
+        let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
+                                                        &source.aline3, &source.aline4, &source.postcode);        
+        
+        let opened = utils::convert_to_date(&source.open_date);
+        let closed = utils::convert_to_date(&source.close_date);
+        
         let org_rec = OrgRec {
             ods_code: source.ods_code,
             ods_name: cap_name,
             grouping: source.grouping,
             health_geog: source.health_geog,
-            postal_add: postal_add,
+            postal_add: postal_address,
             city: cap_city,
             open_date: opened,
             close_date: closed,
@@ -121,7 +104,7 @@ pub async fn import_org_data(data_folder: &PathBuf, source_file_name: &str, pool
     Ok(())
 }
 
-
+/*
 fn capitalise_words(text: &str) -> String {
     
    let mut new_text = "".to_string();
@@ -159,4 +142,4 @@ fn capitalise_words(text: &str) -> String {
    new_text
     
 }
-
+ */

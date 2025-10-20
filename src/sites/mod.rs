@@ -14,11 +14,9 @@ pub async fn create_site_tables(pool: &Pool<Postgres>) -> Result<(), AppError> {
                 , ods_name         varchar    not null
                 , grouping         varchar    null
                 , health_geog      varchar    null
-                , aline1           varchar    null
-                , aline2           varchar    null
-                , aline3           varchar    null
                 , city             varchar    null
                 , postcode         varchar    null
+                , postal_add       varchar    null
                 , open_date        varchar    null
                 , close_date       varchar    null
                 , subtype_code     varchar    null
