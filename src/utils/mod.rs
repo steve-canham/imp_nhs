@@ -39,10 +39,12 @@ pub fn capitalise_words(text: &str) -> String {
             let short_word_slice = match short_word.as_str() {
                 "ST" => "St",
                 "ON" => "on",
+                "IN" => "in",
                 "OF" => "of",
                 "DR" => "Dr",
                 "AT" => "at",
                 "NO" => "No",
+                "DU" => "Du",
                 _ => &short_word
             };
             wcap = short_word_slice.to_string()
@@ -68,6 +70,7 @@ pub fn capitalise_words(text: &str) -> String {
             {
                 short_word_slice = match short_word.as_str() {
                     "AND" => "and",
+                    "ANN" => "Ann",
                     "ALL" => "All",
                     "ASH" => "Ash",
                     "ARK" => "Ark",
@@ -79,7 +82,8 @@ pub fn capitalise_words(text: &str) -> String {
                 short_word_slice = match short_word.as_str() {
                     "BAR" => "Bar",
                     "BAY" => "Bay",
-
+                    "BOW" => "Bow",
+                    "CTR" => "Ctr",
                     "COW" => "Cow",
                     "DAY" => "Day",
                     "DR." => "Dr",
@@ -90,6 +94,7 @@ pub fn capitalise_words(text: &str) -> String {
                 short_word_slice = match short_word.as_str() {
                     "ELM" => "Elm",
                     "EAR" => "Ear",
+                    "ESK" => "Esk",
                     "EYE" => "Eye",
                     "END" => "End",
                     "FIR" => "Fir",
@@ -100,8 +105,11 @@ pub fn capitalise_words(text: &str) -> String {
             else if short_word.starts_with(['G', 'H']) {
                 short_word_slice = match short_word.as_str() {
                     "GEN" => "Gen",
+                    "HAM" => "Ham",
                     "HEY" => "Hey",
+                    "HOB" => "Hob",
                     "HUB" => "Hub",
+                    "HPL" => "Hpl",
                     _ => short_word_slice
                 };
             }
@@ -112,6 +120,7 @@ pub fn capitalise_words(text: &str) -> String {
                     "MON" => "Mon",
                     "NEW" => "New",
                     "NON" => "Non",
+                    "NUR" => "Nur",
                     _ => short_word_slice
                 };
             }
@@ -120,9 +129,12 @@ pub fn capitalise_words(text: &str) -> String {
                     "OFF" => "Off",
                     "OLD" => "Old",
                     "OAK" => "Oak",
+                    "OUR" => "Our",
                     "OUT" => "Out",
-
+                    "ONE" => "One",
+                    "OWN" => "Own",
                     "PEN" => "Pen",
+                    "PRE" => "Pre",
                     _ => short_word_slice
                 };
             }
@@ -130,7 +142,10 @@ pub fn capitalise_words(text: &str) -> String {
                  short_word_slice = match short_word.as_str() {
                     "RED" => "Red", 
                     "RAY" => "Ray",
+                    "ROY" => "Roy",
                     "ROM" => "Rom",
+                    "SEA" => "Sea",
+                    "SIX" => "Six",
                     "SPA" => "Spa",
                     "ST." => "St",
                     "THE" => "The",
@@ -140,6 +155,7 @@ pub fn capitalise_words(text: &str) -> String {
             }
             else {
                 short_word_slice = match short_word.as_str() {
+                    "WAR" => "War",
                     "WAY" => "Way",
                     "WYE" => "Wye",
                     "WAX" => "Wax",
@@ -153,24 +169,33 @@ pub fn capitalise_words(text: &str) -> String {
         else if wcap.len() == 4 {
            
            let short_word_slice = match wcap.as_str() {
-                "Crht" => "CRHT",
                 "Adhd" => "ADHD",
-                "Ftac" => "FTAC",
-                "Cwmh" => "CWMH",
-                "Nifs" => "NIFS",
                 "Aecu" => "AECU",
                 "Afrs" => "AFRS",
+                "Camh" => "CAMH",
+                "Cdat" => "CDAT",
+                "Crht" => "CRHT",
+                "Chbt" => "CHBT",
+                "Cldt" => "CLDT",
                 "Cmht" => "CMHT",
-                "Iapt" => "IAPT",
+                "Cwmh" => "CWMH",
                 "Cypd" => "CYPD",
                 "Cyps" => "CYPS",
                 "Daat" => "DAAT",
                 "Ddtc" => "DDTC",
                 "Fp10" => "FP10",
+                "Ftac" => "FTAC",
+                "Gstt" => "GSTT",
+                "Hbss" => "HBSS",
                 "Hlht" => "HLHT",
                 "Hmls" => "HMLS",
+                "Iapt" => "IAPT",
                 "Mhlt" => "MHLT",
+                "Nifs" => "NIFS",
+                "Nihr" => "NIHR",
+                "Nlfs" => "NLFS",
                 "Rhch" => "RHCH",
+                "Uclh" => "UCLH",
                 "Upon" => "upon",
                 "Ymca" => "YMCA",
                 _ => wcap.as_str()
@@ -183,14 +208,17 @@ pub fn capitalise_words(text: &str) -> String {
            
            let short_word_slice = match wcap.as_str() {
                 "Camhs" => "CAMHS",
-                "Mhsop" => "MHSOP",
+                "Cofph" => "CPFPH",
+                "Cowph" => "COWPH",  
                 "Crhtt" => "CRHTT",
-                "Epact" => "ePact",
                 "Ctaid" => "CTAID",
+                "Ctpld" => "CTPLD",
                 "Daart" => "DAART",
                 "Dairs" => "DAIRS",
-                "Cofph" => "CPFPH",
-                "Cowph" => "COWPH",               
+                "Epact" => "ePact",
+                "Idass" => "IDASS",
+                "Mhcas" => "MHCAS",
+                "Mhsop" => "MHSOP",
                 "Under" => "under",
 
                 _ => wcap.as_str()
@@ -249,7 +277,6 @@ pub fn repair_brackets(text: &str) -> String {
        else 
             {format!("({})", capitalise_words(&caps["content"]))}
     }).to_string();
-    //new_text = re.replace_all(&new_text, "(FOO)" ).to_string();
     new_text
 }
 
@@ -261,6 +288,7 @@ pub fn repair_site_name(text: &str) -> String {
     let new_text = new_text.replace("E Pact", "ePact");
     let new_text = new_text.replace("Cypmhs", "CYPMHS");
     let new_text = new_text.replace("Fp10hnc", "FP10HNC");
+    let new_text = new_text.replace("Y AMH ", "YAMH ");
     new_text
 }
   

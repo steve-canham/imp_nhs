@@ -1,8 +1,8 @@
 
 pub mod setup;
 pub mod err;
-mod orgs;
-mod sites;
+mod import;
+mod vectors;
 mod utils;
 
 
@@ -26,20 +26,16 @@ pub async fn run(args: Vec<OsString>) -> Result<(), AppError> {
     setup::establish_log(&params)?;
     let pool = setup::get_db_pool().await?;
          
-    if flags.import_data   
+    if flags.import_data   // normally should be true
     {
-        // Do orgs 
+        // recreate the tables
 
-        orgs::create_org_tables(&pool).await?;
-        let file_name = "etr.csv";
-        orgs::import_data(&params.data_folder, file_name, &pool).await?;
+        setup::create_tables(&pool).await?;
 
-        // Do Sites
-
-        sites::create_site_tables(&pool).await?;
-        let file_name = "ets.csv";
-        sites::import_data(&params.data_folder, file_name, &pool).await?;
-        
+        // Import the data
+       
+        import::import_data(&params.data_folder, &pool).await?;
+       
      }
 
      Ok(())  

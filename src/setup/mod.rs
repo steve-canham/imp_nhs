@@ -1,9 +1,11 @@
 pub mod config_reader;
 pub mod log_helper;
 pub mod cli_reader;
+mod create_tables;
 
 use crate::err::AppError;
-use sqlx::postgres::{PgPoolOptions, PgConnectOptions, PgPool};
+use sqlx::postgres::{PgPoolOptions, PgConnectOptions};
+use sqlx::{Pool, Postgres};
 use std::path::PathBuf;
 use cli_reader::{CliPars, Flags};
 use std::fs;
@@ -77,7 +79,7 @@ fn folder_exists(folder_name: &PathBuf) -> bool {
         
 
 
-pub async fn get_db_pool() -> Result<PgPool, AppError> {  
+pub async fn get_db_pool() -> Result<Pool<Postgres>, AppError> {  
 
     // Establish DB name and thence the connection string
     // (done as two separate steps to allow for future development).
@@ -118,6 +120,14 @@ pub fn log_set_up() -> bool {
         Some(_) => true,
         None => false,
     }
+}
+
+
+pub async fn create_tables(pool: &Pool<Postgres>) -> Result<(), AppError> {
+
+    create_tables::create_tables(pool).await?;
+
+    Ok(())
 }
 
 
