@@ -1,24 +1,23 @@
 
 use crate::AppError;
 use crate::utils;
+use crate::vectors::trust_vectors::TrustVecs;
+use super::rec_structs::TrustRec;
 
 use sqlx::{Pool, Postgres};
 use std::path::PathBuf;
 use std::io::BufReader;
 use std::fs::File;
 use csv::ReaderBuilder;
-use chrono::NaiveDate;
-
-use crate::vectors::trust_vectors::TrustVecs;
 use log::info;
 
 #[derive(serde::Deserialize)]
 #[allow(dead_code)]
-pub struct OrgLine {
+pub struct TrustLine {
     pub ods_code : String,
     pub ods_name: String,
     pub grouping: String,
-    pub health_geog : String,
+    pub health_geog: String,
     pub aline1: String,
     pub aline2: String,
     pub aline3: String,
@@ -41,19 +40,6 @@ pub struct OrgLine {
     pub column25: String,
     pub column26: String,
     pub column27: String,
- }
-
-#[derive(Debug)]
-pub struct OrgRec {
-    pub ods_code : String,
-    pub ods_name: String,
-    pub grouping: String,
-    pub health_geog : String,
-    pub city: String,
-    pub postcode: String,
-    pub postal_add: String,
-    pub open_date: Option<NaiveDate>,
-    pub close_date: Option<NaiveDate>, 
 }
 
 
@@ -74,7 +60,8 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
             
     for result in csv_rdr.deserialize() {
     
-        let source: OrgLine = result?;
+        let source: TrustLine = result?;
+
 
         let cap_name =  utils::capitalise_words(&source.ods_name);
         let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
@@ -83,7 +70,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
         let opened = utils::convert_to_date(&source.open_date);
         let closed = utils::convert_to_date(&source.close_date);
         
-        let org_rec = OrgRec {
+        let org_rec = TrustRec {
             ods_code: source.ods_code,
             ods_name: cap_name,
             grouping: source.grouping,

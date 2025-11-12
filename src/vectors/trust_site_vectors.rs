@@ -1,4 +1,4 @@
-use crate::import::trust_site_import::SiteRec;
+use crate::import::rec_structs::TrustSiteRec;
 use crate::AppError;
 use sqlx::{postgres::PgQueryResult, Pool, Postgres};
 use chrono::NaiveDate;
@@ -36,7 +36,7 @@ impl TrustSiteVecs{
     }
 
 
-    pub fn add_data(&mut self, r: &SiteRec) 
+    pub fn add_data(&mut self, r: &TrustSiteRec) 
     {
         self.codes.push(r.ods_code.clone());
         self.names.push(r.ods_name.clone());

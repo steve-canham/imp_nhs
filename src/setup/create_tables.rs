@@ -86,7 +86,6 @@ fn get_ccg_sites_sql <'a>() -> &'a str {
       , postal_add varchar null
       , open_date date null
       , close_date date null
-      , subtype_code varchar null
       , parent_org varchar null
       , join_parent_date date null
       , left_parent_date date null
