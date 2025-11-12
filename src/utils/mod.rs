@@ -34,17 +34,19 @@ pub fn capitalise_words(text: &str) -> String {
 
 
         if wcap.len() == 2 {
+            
             let short_word = wcap.to_uppercase();
-
             let short_word_slice = match short_word.as_str() {
-                "ST" => "St",
-                "ON" => "on",
-                "IN" => "in",
-                "OF" => "of",
-                "DR" => "Dr",
                 "AT" => "at",
-                "NO" => "No",
-                "DU" => "Du",
+                "DR" => "Dr",
+                "DU" => "Du",   
+                "IN" => "in",
+                "NO" => "No",             
+                "OF" => "of",
+                "ON" => "on",
+                "ST" => "St",
+                "TY" => "Ty",
+                "YR" => "Yr",
                 _ => &short_word
             };
             wcap = short_word_slice.to_string()
@@ -75,10 +77,11 @@ pub fn capitalise_words(text: &str) -> String {
                     "ASH" => "Ash",
                     "ARK" => "Ark",
                     "AMI" => "Ami",
+                    "AMY" => "Amy",
                     _ => short_word_slice
                 };
             }
-            else if short_word.starts_with(['A', 'B', 'C', 'D']) {
+            else if short_word.starts_with(['B', 'C', 'D']) {
                 short_word_slice = match short_word.as_str() {
                     "BAR" => "Bar",
                     "BAY" => "Bay",
@@ -113,8 +116,9 @@ pub fn capitalise_words(text: &str) -> String {
                     _ => short_word_slice
                 };
             }
-            else if short_word.starts_with(['M', 'N']) {
+            else if short_word.starts_with(['L', 'M', 'N']) {
                 short_word_slice = match short_word.as_str() {
+                    "LOW" => "Low",
                     "MED" => "Med",
                     "MID" => "Mid",
                     "MON" => "Mon",
@@ -148,12 +152,13 @@ pub fn capitalise_words(text: &str) -> String {
                     "SIX" => "Six",
                     "SPA" => "Spa",
                     "ST." => "St",
+                    "SUB" => "Sub",
                     "THE" => "The",
                     "TOR" => "Tor",
                      _ => short_word_slice
                 };
             }
-            else {
+            else if short_word.starts_with(['W', 'Y']) {
                 short_word_slice = match short_word.as_str() {
                     "WAR" => "War",
                     "WAY" => "Way",
@@ -167,64 +172,125 @@ pub fn capitalise_words(text: &str) -> String {
         }
 
         else if wcap.len() == 4 {
-           
-           let short_word_slice = match wcap.as_str() {
-                "Adhd" => "ADHD",
-                "Aecu" => "AECU",
-                "Afrs" => "AFRS",
-                "Camh" => "CAMH",
-                "Cdat" => "CDAT",
-                "Crht" => "CRHT",
-                "Chbt" => "CHBT",
-                "Cldt" => "CLDT",
-                "Cmht" => "CMHT",
-                "Cwmh" => "CWMH",
-                "Cypd" => "CYPD",
-                "Cyps" => "CYPS",
-                "Daat" => "DAAT",
-                "Ddtc" => "DDTC",
-                "Fp10" => "FP10",
-                "Ftac" => "FTAC",
-                "Gstt" => "GSTT",
-                "Hbss" => "HBSS",
-                "Hlht" => "HLHT",
-                "Hmls" => "HMLS",
-                "Iapt" => "IAPT",
-                "Mhlt" => "MHLT",
-                "Nifs" => "NIFS",
-                "Nihr" => "NIHR",
-                "Nlfs" => "NLFS",
-                "Rhch" => "RHCH",
-                "Uclh" => "UCLH",
-                "Upon" => "upon",
-                "Ymca" => "YMCA",
-                _ => wcap.as_str()
-            };
-
-            wcap = short_word_slice.to_string()
+          
+            if wcap.starts_with('A') {
+                wcap = match wcap.as_str() {
+                    "Adhd" => "ADHD".to_string(),
+                    "Aecu" => "AECU".to_string(),
+                    "Afrs" => "AFRS".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with('C')
+            {
+                wcap = match wcap.as_str() {
+                    "Camh" => "CAMH".to_string(),
+                    "Cdat" => "CDAT".to_string(),
+                    "Crht" => "CRHT".to_string(),
+                    "Chbt" => "CHBT".to_string(),
+                    "Cldt" => "CLDT".to_string(),
+                    "Cmht" => "CMHT".to_string(),
+                    "Cwmh" => "CWMH".to_string(),
+                    "Cypd" => "CYPD".to_string(),
+                    "Cyps" => "CYPS".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with(['D', 'F'])
+            {
+                wcap = match wcap.as_str() {
+                    "Daat" => "DAAT".to_string(),
+                    "Ddtc" => "DDTC".to_string(),
+                    "Fp10" => "FP10".to_string(),
+                    "Ftac" => "FTAC".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with(['G', 'H', 'I'])
+            {
+                wcap = match wcap.as_str() {
+                    "Gstt" => "GSTT".to_string(),
+                    "Hbss" => "HBSS".to_string(),
+                    "Hlht" => "HLHT".to_string(),
+                    "Hmls" => "HMLS".to_string(),
+                    "Iapt" => "IAPT".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with(['M', 'N'])
+            {
+                wcap = match wcap.as_str() {
+                    "Mhlt" => "MHLT".to_string(),
+                    "Nifs" => "NIFS".to_string(),
+                    "Nihr" => "NIHR".to_string(),
+                    "Nlfs" => "NLFS".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with(['R', 'U', 'Y'])
+            {
+                wcap = match wcap.as_str() {
+                    "Rhch" => "RHCH".to_string(),
+                    "Uclh" => "UCLH".to_string(),
+                    "Upon" => "upon".to_string(),
+                    "Ymca" => "YMCA".to_string(),
+                    _ => wcap
+                };
+            }
         }
 
         else if wcap.len() == 5 {
+
+            if wcap.starts_with(['C']) {
+                wcap = match wcap.as_str() {
+                    "Camhs" => "CAMHS".to_string(),
+                    "Cofph" => "CPFPH".to_string(),
+                    "Cowph" => "COWPH".to_string(),  
+                    "Crhtt" => "CRHTT".to_string(),
+                    "Ctaid" => "CTAID".to_string(),
+                    "Ctpld" => "CTPLD".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with('D')
+            {
+                wcap = match wcap.as_str() {
+                    "Daart" => "DAART".to_string(),
+                    "Dscro" => "DSCRO".to_string(),
+                    "Dairs" => "DAIRS".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with(['E', 'I', 'M'])
+            {
+                wcap = match wcap.as_str() {
+                    "Epact" => "ePact".to_string(),
+                    "Idass" => "IDASS".to_string(),
+                    "Mhcas" => "MHCAS".to_string(),
+                    "Mhsop" => "MHSOP".to_string(),
+                    _ => wcap
+                };
+            }
+            else if wcap.starts_with(['S', 'L', 'U'])
+            {
+                wcap = match wcap.as_str() {
+                    "Spfit" => "SPFIT".to_string(),
+                    "Lpfit" => "LPFIT".to_string(),
+                    "Under" => "under".to_string(),
+                    _ => wcap
+                };
+            }
+        }
+
+        else if wcap.len() == 7 {
            
            let short_word_slice = match wcap.as_str() {
-                "Camhs" => "CAMHS",
-                "Cofph" => "CPFPH",
-                "Cowph" => "COWPH",  
-                "Crhtt" => "CRHTT",
-                "Ctaid" => "CTAID",
-                "Ctpld" => "CTPLD",
-                "Daart" => "DAART",
-                "Dairs" => "DAIRS",
-                "Epact" => "ePact",
-                "Idass" => "IDASS",
-                "Mhcas" => "MHCAS",
-                "Mhsop" => "MHSOP",
-                "Under" => "under",
-
+                "Nmepfit" => "NMEPFIT",
                 _ => wcap.as_str()
             };
             wcap = short_word_slice.to_string()
         }
+
 
         
         new_text = new_text + " " + &wcap;

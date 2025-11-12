@@ -54,7 +54,7 @@ impl CCGVecs{
         let sql = r#"INSERT INTO ods.ccgs (ods_code, ods_name, grouping, health_geog, 
                       city, postcode, postal_add, open_date, close_date, subtype_code) 
             SELECT * FROM UNNEST($1::text[], $2::text[], $3::text[], $4::text[], $5::text[], 
-                $6::text[], $7::text[], $8::date[], $9::date[], $10::text[];"#;
+                $6::text[], $7::text[], $8::date[], $9::date[], $10::text[]);"#;
 
         sqlx::query(&sql)
         .bind(&self.codes).bind(&self.names).bind(&self.groupings).bind(&self.health_geogs)

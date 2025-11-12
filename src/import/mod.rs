@@ -5,7 +5,27 @@ pub mod ccg_import;
 pub mod ccg_site_import;
 pub mod csu_import;
 pub mod csu_site_import;
-
+pub mod care_trust_import;
+pub mod care_trust_site_import;
+pub mod hospice_import;
+pub mod iom_org_import;
+pub mod non_nhs_import;
+pub mod supp_agencies_import;
+pub mod exec_agencies_import;
+pub mod gpmem_import;
+pub mod pcn_import;
+pub mod pcn_partner_import;
+pub mod php_provider_import;
+pub mod php_provider_site_import;
+pub mod gp_import;
+pub mod sha_import;
+pub mod treat_centre_import;
+pub mod ni_org_import;
+pub mod ni_gp_in_lhscg_import;
+pub mod ni_gp_import;
+pub mod succession_import;
+pub mod wlhb_import;
+pub mod wlhb_site_import;
 
 
 pub mod trust_import;
@@ -18,33 +38,6 @@ use std::path::PathBuf;
 
 
 pub async fn import_data(data_folder: &PathBuf, pool: &Pool<Postgres>) -> Result<(), AppError> {
-
-    /*
-
-    execute_sql(get_care_trusts_sql(), pool).await?;
-    execute_sql(get_care_trust_sites_sql(), pool).await?;
-    execute_sql(get_hospices_sql(), pool).await?;
-    execute_sql(get_iom_orgs_sql(), pool).await?;
-    execute_sql(get_non_nhs_sql(), pool).await?;
-    execute_sql(get_supp_agencies_sql(), pool).await?;
-    execute_sql(get_exec_agencies_sql(), pool).await?;
-    execute_sql(get_gpmem_sql(), pool).await?;
-    execute_sql(get_pcns_sql(), pool).await?;
-    execute_sql(get_pcn_partners_sql(), pool).await?;
-    execute_sql(get_php_providers_sql(), pool).await?;
-    execute_sql(get_php_provider_sites_sql(), pool).await?;
-    execute_sql(get_gps_sql(), pool).await?;
-    execute_sql(get_shas_sql(), pool).await?;
-    execute_sql(get_trusts_sql(), pool).await?;
-    execute_sql(get_treat_centres_sql(), pool).await?;
-    execute_sql(get_trust_sites_sql(), pool).await?;
-    execute_sql(get_ni_orgs_sql(), pool).await?;
-    execute_sql(get_ni_gps_in_lhscg_sql(), pool).await?;
-    execute_sql(get_ni_gps_sql(), pool).await?;
-    execute_sql(get_successions_sql(), pool).await?;
-    execute_sql(get_wlhbs_sql(), pool).await?;
-    execute_sql(get_wlhb_sites_sql(), pool).await?;
-    */
 
     let file_name = "eauth.csv";
     auth_import::import_data(data_folder, file_name, pool).await?;
@@ -61,13 +54,74 @@ pub async fn import_data(data_folder: &PathBuf, pool: &Pool<Postgres>) -> Result
     let file_name = "ecsusite.csv";
     csu_site_import::import_data(data_folder, file_name, pool).await?;
 
+    let file_name = "ect.csv";
+    care_trust_import::import_data(data_folder, file_name, pool).await?;
 
+    let file_name = "ectsite.csv";
+    care_trust_site_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "ehospice.csv";
+    hospice_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "eiom.csv";
+    iom_org_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "enonnhs.csv";
+    non_nhs_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "esa.csv";
+    supp_agencies_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "eother.csv";
+    exec_agencies_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "epcmem.csv";
+    gpmem_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "epcn.csv";
+    pcn_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "epcncorepartnerdetails.csv";
+    pcn_partner_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "ephp.csv";
+    php_provider_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "ephpsite.csv";
+    php_provider_site_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "epraccur.csv";
+    gp_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "espha.csv";
+    sha_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "etreat.csv";
+    trust_import::import_data(data_folder, file_name, pool).await?;
 
     let file_name = "etr.csv";
-    trust_import::import_data(data_folder, file_name, pool).await?;
+    treat_centre_import::import_data(data_folder, file_name, pool).await?;
 
     let file_name = "ets.csv";
     trust_site_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "niorg.csv";
+    ni_org_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "nlhscgpr.csv";
+    ni_gp_in_lhscg_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "npraccur.csv";
+    ni_gp_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "succ.csv";
+    succession_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "wlhb.csv";
+    wlhb_import::import_data(data_folder, file_name, pool).await?;
+
+    let file_name = "wlhbsite.csv";
+    wlhb_site_import::import_data(data_folder, file_name, pool).await?;
 
     Ok(())
 }

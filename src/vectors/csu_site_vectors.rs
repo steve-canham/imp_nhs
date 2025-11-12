@@ -51,10 +51,11 @@ impl CSUSiteVecs{
 
     pub async fn store_data(&self, pool : &Pool<Postgres>) -> Result<PgQueryResult, AppError> {
 
-        let sql = r#"INSERT INTO ods.ccg_sites (ods_code, ods_name, 
-                      city, postcode, postal_add, open_date, close_date, subtype_code, parent_org) 
+        let sql = r#"INSERT INTO ods.csu_sites (ods_code, ods_name, 
+                      city, postcode, postal_add, open_date, close_date, parent_org,
+                      join_parent_date, left_parent_date) 
             SELECT * FROM UNNEST($1::text[], $2::text[], $3::text[], $4::text[], $5::text[], 
-                $6::date[], $7::date[], $8::text[], $9::date[], $10::date[],);"#;
+                $6::date[], $7::date[], $8::text[], $9::date[], $10::date[]);"#;
 
         sqlx::query(&sql)
         .bind(&self.codes).bind(&self.names)

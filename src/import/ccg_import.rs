@@ -93,7 +93,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     }
             
     dv.store_data(&pool).await?;
-    info!("{} records processed from {} to ods.trust_sites", i, source_file_name);
+    info!("{} records processed from {} to ods.ccgs", i, source_file_name);
 
     Ok(())
 }
