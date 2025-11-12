@@ -94,7 +94,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     }
             
     dv.store_data(&pool).await?;
-    info!("{} records processed from {} to ods.ccg_sites", i, source_file_name);
+    info!("{} records processed from {} to ods.php_provider_sites", i, source_file_name);
 
     Ok(())
 }

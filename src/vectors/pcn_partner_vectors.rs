@@ -61,6 +61,7 @@ impl PCNPartnerVecs{
                       $6::text[], $7::text[], $8::text[], $9::date[], $10::date[], $11::bool[]);"#;
 
         sqlx::query(&sql)
+        .bind(&self.codes).bind(&self.names)
         .bind(&self.parent_subicb_locs).bind(&self.parent_subicb_names)
         .bind(&self.pcn_codes).bind(&self.pcn_names)
         .bind(&self.pcn_parent_subicb_locs).bind(&self.pcn_parent_subicb_names)

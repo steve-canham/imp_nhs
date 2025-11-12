@@ -45,10 +45,10 @@ impl EAVecs{
 
     pub async fn store_data(&self, pool : &Pool<Postgres>) -> Result<PgQueryResult, AppError> {
 
-        let sql = r#"INSERT INTO ods.exec_agencies (ods_code, ods_name, grouping, health_geog, 
+        let sql = r#"INSERT INTO ods.exec_agencies (ods_code, ods_name, 
                       city, postcode, postal_add, open_date, close_date, parent_org) 
             SELECT * FROM UNNEST($1::text[], $2::text[], $3::text[], $4::text[], $5::text[], 
-                $6::text[], $7::text[], $8::date[], $9::date[], $10::text[]);"#;
+                $6::date[], $7::date[], $8::text[]);"#;
 
         sqlx::query(&sql)
         .bind(&self.codes).bind(&self.names)

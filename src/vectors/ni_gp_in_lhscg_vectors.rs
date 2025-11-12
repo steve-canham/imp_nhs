@@ -36,7 +36,7 @@ impl LinkedNIGPVecs{
 
     pub async fn store_data(&self, pool : &Pool<Postgres>) -> Result<PgQueryResult, AppError> {
 
-        let sql = r#"INSERT INTO ods.gps_in_lhscg (ods_code, parent_org, parent_org_type, 
+        let sql = r#"INSERT INTO ods.ni_gps_in_lhscg (ods_code, parent_org, parent_org_type, 
                         join_parent_date, left_parent_date) 
             SELECT * FROM UNNEST($1::text[], $2::text[], $3::text[], $4::date[], $5::date[]);"#;
 

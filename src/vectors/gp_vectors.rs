@@ -75,7 +75,7 @@ impl GPVecs{
                       provpurch, prescribing_setting) 
             SELECT * FROM UNNEST($1::text[], $2::text[], $3::text[], $4::text[], $5::text[], 
                 $6::text[], $7::text[], $8::date[], $9::date[], $10::text[], $11::text[], 
-                $12::text[]), $13::date[], $14::date[], $15::text[], $16::text[]);"#;
+                $12::text[], $13::date[], $14::date[], $15::text[], $16::text[]);"#;
 
         sqlx::query(&sql)
         .bind(&self.codes).bind(&self.names).bind(&self.groupings).bind(&self.health_geogs)

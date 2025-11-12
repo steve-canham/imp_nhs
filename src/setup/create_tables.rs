@@ -232,7 +232,7 @@ fn get_exec_agencies_sql <'a>() -> &'a str {
 fn get_gpmem_sql <'a>() -> &'a str {
     r#"drop table if exists ods.gpmem;
     create table ods.gpmem (
-        ods_code varchar not null primary key
+        ods_code varchar not null
       , parent_org varchar not null
       , parent_org_type varchar null
       , join_parent_date date null
@@ -258,7 +258,7 @@ fn get_pcns_sql <'a>() -> &'a str {
 fn get_pcn_partners_sql <'a>() -> &'a str {
     r#"drop table if exists ods.pcn_partners;
     create table ods.pcn_partners (
-        ods_code varchar not null primary key
+        ods_code varchar not null
       , ods_name varchar not null
       , parent_subicb_loc varchar null
       , parent_subicb_name varchar null
@@ -343,7 +343,7 @@ fn get_shas_sql <'a>() -> &'a str {
 fn get_trusts_sql <'a>() -> &'a str {
     r#"drop table if exists ods.trusts;
         create table ods.trusts (
-            ods_code         varchar    not null primary key
+          ods_code         varchar    not null primary key
         , ods_name         varchar    not null
         , grouping         varchar    null
         , health_geog      varchar    null
@@ -374,7 +374,7 @@ fn get_treat_centres_sql <'a>() -> &'a str {
 fn get_trust_sites_sql <'a>() -> &'a str {
     r#"drop table if exists ods.trust_sites;
         create table ods.trust_sites (
-            ods_code         varchar    not null primary key
+          ods_code         varchar    not null primary key
         , ods_name         varchar    not null
         , grouping         varchar    null
         , health_geog      varchar    null
@@ -408,8 +408,8 @@ fn get_ni_orgs_sql <'a>() -> &'a str {
 fn get_ni_gps_in_lhscg_sql <'a>() -> &'a str {
     r#"drop table if exists ods.ni_gps_in_lhscg;
     create table ods.ni_gps_in_lhscg (
-        ods_code varchar not null primary key
-      , parent_code varchar not null
+        ods_code varchar not null
+      , parent_org varchar not null
       , parent_org_type varchar null
       , join_parent_date date null
       , left_parent_date date null
@@ -435,8 +435,8 @@ fn get_ni_gps_sql <'a>() -> &'a str {
 fn get_successions_sql <'a>() -> &'a str {
     r#"drop table if exists ods.successions;
     create table ods. successions (
-        ods_code varchar not null primary key
-      , succ_ods_code varchar not null
+        ods_code varchar not null 
+      , succ_ods_code varchar null
       , succ_reason_code varchar null
       , effective_date date null
       , succession_indicator varchar null
