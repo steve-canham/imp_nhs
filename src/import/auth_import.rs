@@ -62,12 +62,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     
         let source: AuthLine = result?;
 
-        let mut site_name =  utils::capitalise_words(&source.ods_name);
-        if site_name.contains('(') {
-            site_name = utils::repair_brackets(&site_name)
-        };
-        site_name = utils::repair_site_name(&site_name);
-
+        let site_name =  utils::capitalise_site_name(&source.ods_name);
         let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
                                                         &source.aline3, &source.aline4, &source.postcode);        
         

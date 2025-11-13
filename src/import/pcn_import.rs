@@ -47,23 +47,17 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     
         let source: PCNLine = result?;
 
-        let mut site_name =  utils::capitalise_words(&source.ods_name);
-        if site_name.contains('(') {
-            site_name = utils::repair_brackets(&site_name)
-        };
-        site_name = utils::repair_site_name(&site_name);
-
+        let site_name =  utils::capitalise_site_name(&source.ods_name);
         let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
-                                                        &source.aline3, &source.aline4, &source.postcode);        
-        
+                                                        &source.aline3, &source.aline4, &source.postcode);       
         let opened = utils::convert_to_date(&source.open_date);
         let closed = utils::convert_to_date(&source.close_date);
-        
+           
         let pcn_rec = PCNRec {
             ods_code: source.ods_code,
             ods_name: site_name,
             subicb_loc: source.subicb_loc,
-            subicb_name: source.subicb_name,
+            subicb_name: utils::capitalise_words(&source.subicb_name),
             open_date: opened,
             close_date: closed,
             city: cap_city,

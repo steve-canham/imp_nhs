@@ -62,8 +62,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     
         let source: TrustLine = result?;
 
-
-        let cap_name =  utils::capitalise_words(&source.ods_name);
+        let site_name =  utils::capitalise_site_name(&source.ods_name);
         let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
                                                         &source.aline3, &source.aline4, &source.postcode);        
         
@@ -72,7 +71,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
         
         let org_rec = TrustRec {
             ods_code: source.ods_code,
-            ods_name: cap_name,
+            ods_name: site_name,
             grouping: source.grouping,
             health_geog: source.health_geog,
             city: cap_city,

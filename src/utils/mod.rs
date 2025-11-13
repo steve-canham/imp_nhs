@@ -1,3 +1,5 @@
+use std::char;
+
 //use crate::AppError;
 use chrono::NaiveDate;
 use regex::{Captures, Regex};
@@ -17,289 +19,103 @@ pub fn convert_to_date(text: &str) -> Option<NaiveDate> {
 
 pub fn capitalise_words(text: &str) -> String {
     
-   let mut new_text = "".to_string();
-   let lower = text.to_string().to_lowercase();
+   // Preliminary corrections.
+   // Ensure &s and brackets are properly spaced.
+
+   let mut arg_text = text.replace("'","’");
+   arg_text = arg_text.replace(".","");
+
+   if arg_text.contains('&') {
+       arg_text = repair_ampersands(&arg_text);
+   }
+
+   if arg_text.contains('(') {
+       arg_text = repair_brackets(&arg_text);
+   }
    
+   // Put in lower case and remove hyphens from some names.
+
+   let mut lower = arg_text.to_string().to_lowercase();
+   
+   if lower.contains('-') {
+        lower = lower.replace("-on-", " on ");
+        lower = lower.replace("-under-", " under ");
+        lower = lower.replace("-in-", " in ");
+        lower = lower.replace("-super-", " super ");
+        lower = lower.replace("-upon-", " upon");
+        lower = lower.replace("-by-the-", " by the ");
+   }
+
+   if lower.contains('-') {
+       lower = repair_hyphens(&lower);
+   }
+   
+   // Split lower case string into separate words 
+   // Consider each word in turn
+
    let parts: Vec<_> = lower
-      .split(|c: char| c == '-' || c.is_ascii_whitespace())
+      .split(|c: char| c.is_ascii_whitespace())
       .filter(|p| !p.is_empty())
       .collect();
+   
+   let mut new_text = "".to_string();
 
    for w in parts {
+        
+        if w.starts_with('(') {
+            new_text = new_text + " " + &w;  // add bracketed text 'as is'
+            continue;
+        }
+
         let mut c = w.chars();      // turn word into a vector of characters
         let mut wcap = match c.next() {
             None => String::new(),
             Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
         };
 
-
         if wcap.len() == 2 {
-            
-            let short_word = wcap.to_uppercase();
-            let short_word_slice = match short_word.as_str() {
-                "AT" => "at",
-                "DR" => "Dr",
-                "DU" => "Du",   
-                "IN" => "in",
-                "NO" => "No",             
-                "OF" => "of",
-                "ON" => "on",
-                "ST" => "St",
-                "TY" => "Ty",
-                "YR" => "Yr",
-                _ => &short_word
-            };
-            wcap = short_word_slice.to_string()
+             wcap = check_2_letter_word(&wcap);
         }
-
         else if wcap.len() == 3 {
-
-            let short_word = wcap.to_uppercase();
-            let mut short_word_slice = short_word.as_str();
-
-            if short_word.starts_with(['1', '2', '3', '4', '5', '6']) {
-                short_word_slice = match short_word.as_str() {
-                    "1ST" => "1st",
-                    "2ND" => "2nd",
-                    "3RD" => "3rd",
-                    "4TH" => "4th",
-                    "5TH" => "5th",
-                    "6TH" => "6th",
-                    _ => &short_word
-                };
-            }
-            else if short_word.starts_with('A')
-            {
-                short_word_slice = match short_word.as_str() {
-                    "AND" => "and",
-                    "ANN" => "Ann",
-                    "ALL" => "All",
-                    "ASH" => "Ash",
-                    "ARK" => "Ark",
-                    "AMI" => "Ami",
-                    "AMY" => "Amy",
-                    _ => short_word_slice
-                };
-            }
-            else if short_word.starts_with(['B', 'C', 'D']) {
-                short_word_slice = match short_word.as_str() {
-                    "BAR" => "Bar",
-                    "BAY" => "Bay",
-                    "BOW" => "Bow",
-                    "CTR" => "Ctr",
-                    "COW" => "Cow",
-                    "DAY" => "Day",
-                    "DR." => "Dr",
-                    _ => short_word_slice
-                };
-            }
-            else if short_word.starts_with(['E', 'F']) {
-                short_word_slice = match short_word.as_str() {
-                    "ELM" => "Elm",
-                    "EAR" => "Ear",
-                    "ESK" => "Esk",
-                    "EYE" => "Eye",
-                    "END" => "End",
-                    "FIR" => "Fir",
-                    "FOR" => "for",
-                    _ => short_word_slice
-                };
-            }
-            else if short_word.starts_with(['G', 'H']) {
-                short_word_slice = match short_word.as_str() {
-                    "GEN" => "Gen",
-                    "HAM" => "Ham",
-                    "HEY" => "Hey",
-                    "HOB" => "Hob",
-                    "HUB" => "Hub",
-                    "HPL" => "Hpl",
-                    _ => short_word_slice
-                };
-            }
-            else if short_word.starts_with(['L', 'M', 'N']) {
-                short_word_slice = match short_word.as_str() {
-                    "LOW" => "Low",
-                    "MED" => "Med",
-                    "MID" => "Mid",
-                    "MON" => "Mon",
-                    "NEW" => "New",
-                    "NON" => "Non",
-                    "NUR" => "Nur",
-                    _ => short_word_slice
-                };
-            }
-            else if short_word.starts_with(['O', 'P']) {
-                short_word_slice = match short_word.as_str() {
-                    "OFF" => "Off",
-                    "OLD" => "Old",
-                    "OAK" => "Oak",
-                    "OUR" => "Our",
-                    "OUT" => "Out",
-                    "ONE" => "One",
-                    "OWN" => "Own",
-                    "PEN" => "Pen",
-                    "PRE" => "Pre",
-                    _ => short_word_slice
-                };
-            }
-            else if short_word.starts_with(['R', 'S', 'T']) {
-                 short_word_slice = match short_word.as_str() {
-                    "RED" => "Red", 
-                    "RAY" => "Ray",
-                    "ROY" => "Roy",
-                    "ROM" => "Rom",
-                    "SEA" => "Sea",
-                    "SIX" => "Six",
-                    "SPA" => "Spa",
-                    "ST." => "St",
-                    "SUB" => "Sub",
-                    "THE" => "The",
-                    "TOR" => "Tor",
-                     _ => short_word_slice
-                };
-            }
-            else if short_word.starts_with(['W', 'Y']) {
-                short_word_slice = match short_word.as_str() {
-                    "WAR" => "War",
-                    "WAY" => "Way",
-                    "WYE" => "Wye",
-                    "WAX" => "Wax",
-                    "YEW" => "Yew", 
-                    _ => &short_word_slice
-                };
-            }
-            wcap = short_word_slice.to_string();
+            wcap = check_3_letter_word(&wcap);
         }
-
         else if wcap.len() == 4 {
-          
-            if wcap.starts_with('A') {
-                wcap = match wcap.as_str() {
-                    "Adhd" => "ADHD".to_string(),
-                    "Aecu" => "AECU".to_string(),
-                    "Afrs" => "AFRS".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with('C')
-            {
-                wcap = match wcap.as_str() {
-                    "Camh" => "CAMH".to_string(),
-                    "Cdat" => "CDAT".to_string(),
-                    "Crht" => "CRHT".to_string(),
-                    "Chbt" => "CHBT".to_string(),
-                    "Cldt" => "CLDT".to_string(),
-                    "Cmht" => "CMHT".to_string(),
-                    "Cwmh" => "CWMH".to_string(),
-                    "Cypd" => "CYPD".to_string(),
-                    "Cyps" => "CYPS".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with(['D', 'F'])
-            {
-                wcap = match wcap.as_str() {
-                    "Daat" => "DAAT".to_string(),
-                    "Ddtc" => "DDTC".to_string(),
-                    "Fp10" => "FP10".to_string(),
-                    "Ftac" => "FTAC".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with(['G', 'H', 'I'])
-            {
-                wcap = match wcap.as_str() {
-                    "Gstt" => "GSTT".to_string(),
-                    "Hbss" => "HBSS".to_string(),
-                    "Hlht" => "HLHT".to_string(),
-                    "Hmls" => "HMLS".to_string(),
-                    "Iapt" => "IAPT".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with(['M', 'N'])
-            {
-                wcap = match wcap.as_str() {
-                    "Mhlt" => "MHLT".to_string(),
-                    "Nifs" => "NIFS".to_string(),
-                    "Nihr" => "NIHR".to_string(),
-                    "Nlfs" => "NLFS".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with(['R', 'U', 'Y'])
-            {
-                wcap = match wcap.as_str() {
-                    "Rhch" => "RHCH".to_string(),
-                    "Uclh" => "UCLH".to_string(),
-                    "Upon" => "upon".to_string(),
-                    "Ymca" => "YMCA".to_string(),
-                    _ => wcap
-                };
-            }
+            wcap = check_4_letter_word(&wcap);
         }
-
         else if wcap.len() == 5 {
-
-            if wcap.starts_with(['C']) {
-                wcap = match wcap.as_str() {
-                    "Camhs" => "CAMHS".to_string(),
-                    "Cofph" => "CPFPH".to_string(),
-                    "Cowph" => "COWPH".to_string(),  
-                    "Crhtt" => "CRHTT".to_string(),
-                    "Ctaid" => "CTAID".to_string(),
-                    "Ctpld" => "CTPLD".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with('D')
-            {
-                wcap = match wcap.as_str() {
-                    "Daart" => "DAART".to_string(),
-                    "Dscro" => "DSCRO".to_string(),
-                    "Dairs" => "DAIRS".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with(['E', 'I', 'M'])
-            {
-                wcap = match wcap.as_str() {
-                    "Epact" => "ePact".to_string(),
-                    "Idass" => "IDASS".to_string(),
-                    "Mhcas" => "MHCAS".to_string(),
-                    "Mhsop" => "MHSOP".to_string(),
-                    _ => wcap
-                };
-            }
-            else if wcap.starts_with(['S', 'L', 'U'])
-            {
-                wcap = match wcap.as_str() {
-                    "Spfit" => "SPFIT".to_string(),
-                    "Lpfit" => "LPFIT".to_string(),
-                    "Under" => "under".to_string(),
-                    _ => wcap
-                };
-            }
+            wcap = check_5_letter_word(&wcap);
         }
-
+        else if wcap.len() == 6 {
+           wcap = check_6_letter_word(&wcap);
+        }
         else if wcap.len() == 7 {
-           
-           let short_word_slice = match wcap.as_str() {
-                "Nmepfit" => "NMEPFIT",
-                _ => wcap.as_str()
-            };
-            wcap = short_word_slice.to_string()
+           wcap = check_7_letter_word(&wcap);
         }
 
+        if wcap.contains("'") {
+            wcap = wcap.replace("'", "’"); 
+        }
+            
+        if (wcap.starts_with("O’") || wcap.starts_with("D’sou")) && wcap.chars().count() > 2 {
+            let mut s = wcap.chars().collect::<Vec<char>>();
+            s[2] = s[2].to_ascii_uppercase();
+            wcap = s.iter().collect::<String>();
+        }
 
-        
         new_text = new_text + " " + &wcap;
-   }
+    }
+         
+    new_text = new_text.trim().to_string();
 
-   new_text = new_text.replace("'","’");
-   new_text = new_text.replace(".","");
-   
-   new_text.trim().to_string()
+    if new_text.contains('(') {
+       
+       let re = Regex::new(r"\((?<content>[^)]+)\)").unwrap();
+       new_text = re.replace_all(&new_text, |caps: &Captures| {
+            format!("({})", capitalise_words(&caps["content"].replace("-", " ")).trim())
+        }).to_string();
+    }
+
+    new_text
     
 }
 
@@ -321,11 +137,34 @@ pub fn get_postal_address(a1: &str, a2: &str, a3: &str, city: &str, pcode: &str)
     (cap_city, postal_address)
 }
 
+
+pub fn repair_ampersands(text: &str) -> String {
+
+    let mut new_text = text.to_string(); 
+    
+    // find position of ampersand - if no space before add one
+
+    let re = Regex::new(r"\S&").unwrap();
+    if re.is_match(text)
+    {
+        new_text = new_text.replace("&", " &");
+    }
+
+    let re = Regex::new(r"&\S").unwrap();
+    if re.is_match(text)
+    {
+        new_text = new_text.replace("&", "& ");
+    }
+
+    new_text
+}
+
+
 pub fn repair_brackets(text: &str) -> String {
 
     let mut new_text = text.to_string(); 
     
-    // find position of left bracket - if no space before add one
+    // Left bracket - if no space before add one
 
     let re = Regex::new(r"\S\(").unwrap();
     if re.is_match(text)
@@ -333,28 +172,592 @@ pub fn repair_brackets(text: &str) -> String {
         new_text = new_text.replace("(", " (");
     }
 
-    // if 4 or fewer letters in the brackets capitalise all
-    // else capitalise the first letter of the rest
+     // Right bracket - if no space after add one
 
-    let re = Regex::new(r"\((?<content>[^)]+)\)").unwrap();
-    new_text = re.replace_all(&new_text, |caps: &Captures| {
-       if caps["content"].len() < 5 
-            {format!("({})", &caps["content"].to_uppercase())}
-       else 
-            {format!("({})", capitalise_words(&caps["content"]))}
-    }).to_string();
+    let re = Regex::new(r"\)\S").unwrap();
+    if re.is_match(text)
+    {
+        new_text = new_text.replace(")", ") ");
+    }
+        
     new_text
 }
 
 
-pub fn repair_site_name(text: &str) -> String {
+pub fn repair_hyphens(text: &str) -> String {
 
-    let new_text = text.to_string(); 
-    let new_text = new_text.replace("(Epact", "(ePact");
-    let new_text = new_text.replace("E Pact", "ePact");
-    let new_text = new_text.replace("Cypmhs", "CYPMHS");
-    let new_text = new_text.replace("Fp10hnc", "FP10HNC");
-    let new_text = new_text.replace("Y AMH ", "YAMH ");
-    new_text
+    let mut new_text = text.to_string(); 
+    
+    // If no space before add one
+
+    let re = Regex::new(r"\S-").unwrap();
+    if re.is_match(text)
+    {
+        new_text = new_text.replace("-", " -");
+    }
+
+    // If no space after add one
+
+    let re = Regex::new(r"-\S").unwrap();
+    if re.is_match(text)
+    {
+        new_text = new_text.replace("-", "- ");
+    }
+
+    // but some are extraneous matches and the spacing needs to be removed again
+
+    new_text = new_text.replace(" - a ", "-a ");
+    new_text = new_text.replace(" - b ", "-b ");
+    if new_text.ends_with(" - a") {new_text = new_text.replace(" - a", "-a");}
+    if new_text.ends_with(" - b") {new_text = new_text.replace(" - b", "-b");}
+
+    new_text = new_text.replace(" - amh", "amh");
+    new_text = new_text.replace(" - camhs", "camhs");
+    new_text = new_text.replace(" - ca", "ca");
+
+    new_text = new_text.replace("non - ", "non-");
+    new_text = new_text.replace("pre - ", "pre-");
+
+    // hyphens between numbers should be closed up again...
+
+    let re = Regex::new(r"(?<numhyph>[0-9] - [0-9])").unwrap();
+    new_text = re.replace_all(&new_text, 
+        |caps: &Captures| {caps["numhyph"].replace(" - ", "-")}).to_string();
+
+   new_text
 }
-  
+
+
+pub fn capitalise_site_name(text: &str) -> String {
+
+    let mut new_name = capitalise_words(text);
+
+    new_name = new_name.replace("E Pact", "ePact");
+    new_name = new_name.replace("Y AMH ", "YAMH ");
+    new_name = new_name.replace("IST Floor", "1st Floor");
+    new_name = new_name.replace("O Cliff", "O’Cliff");
+    new_name = new_name.replace(" TO A ", " to a ");
+    new_name = new_name.replace(" C S U", " CSU");
+    new_name = new_name.replace("in - Reach", "Inreach");
+    new_name = new_name.replace("D - MHSOP", "DMHSOP");
+    new_name
+}
+
+
+fn check_2_letter_word(wcap: &str) -> String {
+    
+    let short_word = wcap.to_uppercase();
+    let short_word_slice = match short_word.as_str() {
+                "AT" => "at",
+                "BY" => "by",
+                "DR" => "Dr",
+                "DU" => "Du",   
+                "IN" => "in",
+                "LE" => "le",
+                "NO" => "No",             
+                "OF" => "of",
+                "ON" => "on",
+                "OZ" => "Oz",
+                "ST" => "St",
+                "TY" => "Ty",
+                "YR" => "Yr",
+                _ => &short_word
+            };
+    short_word_slice.to_string()
+}
+
+
+fn check_3_letter_word(wcap: &str) -> String {
+
+    let short_word = wcap.to_uppercase();
+    let mut short_word_slice = short_word.as_str();
+
+    if short_word.starts_with(['1', '2', '3', '4', '5', '6']) {
+        short_word_slice = match short_word.as_str() {
+            "1ST" => "1st",
+            "2ND" => "2nd",
+            "3RD" => "3rd",
+            "4TH" => "4th",
+            "5TH" => "5th",
+            "6TH" => "6th",
+            _ => &short_word
+        };
+    }
+    else if short_word.starts_with('A')
+    {
+        short_word_slice = match short_word.as_str() {
+            "AND" => "and",
+            "ANN" => "Ann",
+            "ALL" => "All",
+            "ASH" => "Ash",
+            "ARK" => "Ark",
+            "AMI" => "Ami",
+            "AMY" => "Amy",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('B') {
+        short_word_slice = match short_word.as_str() {
+            "BAR" => "Bar",
+            "BAY" => "Bay",
+            "BEE" => "Bee",
+            "BEN" => "Ben",
+            "BOW" => "Bow",
+            "BOX" => "Box",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('C') {
+        short_word_slice = match short_word.as_str() {
+            "CLU" => "Clu",
+            "CTR" => "Ctr",
+            "COW" => "Cow",
+            "CWM" => "Cwm",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('D') {
+        short_word_slice = match short_word.as_str() {
+            "DAN" => "Dan",
+            "DAY" => "Day",
+            "DOT" => "Dot",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('E') {
+        short_word_slice = match short_word.as_str() {
+            "ELM" => "Elm",
+            "EAR" => "Ear",
+            "ELY" => "Ely",
+            "ERW" => "Erw",
+            "ESK" => "Esk",
+            "EYE" => "Eye",
+            "END" => "End",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('F') {
+        short_word_slice = match short_word.as_str() {
+            "FIR" => "Fir",
+            "FLR" => "Flr",
+            "FOR" => "for",
+            "FOX" => "Fox",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('G') {
+        short_word_slice = match short_word.as_str() {
+            "GAP" => "Gap",
+            "GEN" => "Gen",
+            "GET" => "Get",
+            "GWY" => "Gwy",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('H') {
+        short_word_slice = match short_word.as_str() {
+            "HAM" => "Ham",
+            "HEN" => "Hen",
+            "HEY" => "Hey",
+            "HOB" => "Hob",
+            "HUB" => "Hub",
+            "HPL" => "Hpl",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with(['L', 'M', 'N']) {
+        short_word_slice = match short_word.as_str() {
+            "LEA" => "Lea",
+            "LEE" => "Lee",
+            "LEY" => "Ley",
+            "LOW" => "Low",
+            "LTD" => "Ltd",
+            "MAN" => "Man",
+            "MED" => "Med",
+            "MID" => "Mid",
+            "MON" => "Mon",
+            "MOR" => "Mor",
+            "NEW" => "New",
+            "NON" => "Non",
+            "NOW" => "Now",
+            "NUR" => "Nur",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with(['O', 'P']) {
+        short_word_slice = match short_word.as_str() {
+            "OBS" => "Obs",
+            "OFF" => "Off",
+            "OLD" => "Old",
+            "OAK" => "Oak",
+            "OUR" => "Our",
+            "OUT" => "Out",
+            "ONE" => "One",
+            "OWN" => "Own",
+            "PEN" => "Pen",
+            "PRE" => "Pre",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with(['R', 'S', 'T']) {
+        short_word_slice = match short_word.as_str() {
+            "RED" => "Red", 
+            "RAY" => "Ray",
+            "ROY" => "Roy",
+            "ROM" => "Rom",
+            "SAN" => "San",
+            "SEA" => "Sea",
+            "SIR" => "Sir",
+            "SIX" => "Six",
+            "SPA" => "Spa",
+            "SUE" => "Sue",
+            "SUB" => "Sub",
+            "SWN" => "Swn",
+            "TAF" => "Taf",
+            "THE" => "The",
+            "TOR" => "Tor",
+            "TOP" => "Top",
+            "TYN" => "Tyn",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with(['V', 'W', 'Y']) {
+        short_word_slice = match short_word.as_str() {
+            "VAN" => "Van",
+            "WAR" => "War",
+            "WAY" => "Way",
+            "WYE" => "Wye",
+            "WAX" => "Wax",
+            "YEW" => "Yew", 
+            _ => &short_word_slice
+        };
+    }
+
+    short_word_slice.to_string()
+
+}
+
+
+fn check_4_letter_word(wcap: &str) -> String {
+    
+    let short_word = wcap.to_string();
+    let mut short_word_slice = short_word.as_str();
+
+    if wcap.starts_with('A') {
+        short_word_slice = match wcap {
+            "Adhd" => "ADHD",
+            "Aecu" => "AECU",
+            "Afrs" => "AFRS",
+            _ => wcap
+        };
+    }
+    if wcap.starts_with('B') {
+        short_word_slice = match wcap {
+            "Bcsp" => "BCSPO",
+            "Bfwh" => "BFWH",
+            "Bhft" => "BHFT",
+            "Blmk" => "BLMK",
+            "Bmec" => "BMEC",
+            "Brid" => "BRID",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('C')
+    {
+        short_word_slice = match wcap {
+            "Camh" => "CAMH",
+            "Ccgs" => "CCGS",
+            "Ccht" => "CCHT",
+            "Cdat" => "CDAT",
+            "Ceds" => "CEDS",
+            "Cert" => "CERT",
+            "Crht" => "CRHT",
+            "Chbt" => "CHBT",
+            "Citt" => "CITT",
+            "Cldt" => "CLDT",
+            "Cmht" => "CMHT",
+            "Cmit" => "CMIT",
+            "Cnwl" => "CNWL",
+            "Cwmh" => "CWMH",
+            "Cypd" => "CYPD",
+            "Cyps" => "CYPS",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('D')
+    {
+        short_word_slice = match wcap {
+            "Daat" => "DAAT",
+            "Damh" => "DAMH",
+            "Ddtc" => "DDTC",
+            _ => wcap
+        };
+    }
+        else if wcap.starts_with('E')
+    {
+        short_word_slice = match wcap {
+            "Efnp" => "EFNP",
+            "Eip1" => "EIP1",
+            "Eip2" => "EIP2",
+            "Eip3" => "EIP3",
+            "Elft" => "ELFT",
+            "Eltt" => "ELTT",
+            "Enht" => "ENHT",
+            "Enpt" => "ENPT",
+            "Epma" => "EPMA",
+            "Etct" => "ETCT",
+            _ => wcap
+        };
+    }
+        else if wcap.starts_with('F')
+    {
+        short_word_slice = match wcap {
+            "Fp10" => "FP10",
+            "Ftac" => "FTAC",
+            "Fgpf" => "FGPF",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with(['G'])
+    {
+        short_word_slice = match wcap {
+            "Gdpr" => "GDPR",
+            "Gim1" => "GIM1",
+            "Gmht" => "GMHT",
+            "Gstt" => "GSTT",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('H')
+    {
+        short_word_slice = match wcap {
+            "Hbss" => "HBSS",
+            "Hdft" => "HDFT",
+            "Hlht" => "HLHT",
+            "Hmls" => "HMLS",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('I')
+    {
+        short_word_slice = match wcap {
+            "Iapt" => "IAPT",
+            "Icrt" => "ICRT",
+            "Ipct" => "IPCT",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('M')
+    {
+        short_word_slice = match wcap {
+            "Mhlt" => "MHLT",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('N')
+    {
+        short_word_slice = match wcap {
+            "Ncic" => "NCIC",
+            "Necs" => "NECS",
+            "Nhft" => "NHFT",
+            "Nhnn" => "NHNN",
+            "Nici" => "NICI",
+            "Nifs" => "NIFS",
+            "Nihr" => "NIHR",
+            "Nlfs" => "NLFS",
+            "Nmgh" => "NMGH",
+            "Nmp1" => "NMP1",
+            "Nmp2" => "NMP2",
+            "Norf" => "NORF",
+            "Ntbc" => "NTBC",
+            "Ntei" => "NTEI",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('O')
+    {
+        short_word_slice = match wcap {
+            "Ohid" => "OHID",
+            "Opmh" => "OPMH",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('P')
+    {
+        short_word_slice = match wcap {
+            "Pnsl" => "PNSL",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('R')
+    {
+        short_word_slice = match wcap {
+            "Rhch" => "RHCH",
+            "Rmch" => "RMCH",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('S')
+    {
+        short_word_slice = match wcap {
+            "Sais" => "SAIS",
+            "Sdfs" => "SDFS",
+            "Ssnc" => "SSNC",
+            "Smht" => "SMHT",
+            "Sney" => "SNEY",
+            "Srft" => "SRFT",
+            "Ssdu" => "SSDU",
+            "Stct" => "STCT",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('T')
+    {
+        short_word_slice = match wcap {
+            "Tiaa" => "TIAA",
+            "Tamh" => "TAMH",
+            "Titm" => "TITM",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('U')
+    {
+        short_word_slice = match wcap {
+            "Uclh" => "UCLH",
+            "Uhnd" => "UHND",
+            "Ulht" => "ULHT",
+            "Upon" => "upon",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('W')
+    {
+        short_word_slice = match wcap {
+            "Wtbc" => "WTBC",
+            "Wtei" => "WTEI",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('Y')
+    {
+        short_word_slice = match wcap {
+           "Yamh" => "YAMH",
+           "Ymca" => "YMCA",
+            _ => wcap
+        };
+    }
+
+    short_word_slice.to_string()
+}
+
+
+fn check_5_letter_word(wcap: &str) -> String {
+    
+    let short_word = wcap.to_string();
+    let mut short_word_slice = short_word.as_str();
+
+    if wcap.starts_with(['A', 'B']) {
+        short_word_slice = match wcap {
+            "Adash" => "ADASH",
+            "Bnssg" => "BNSSG",
+                _ => wcap
+        };
+    }
+    if wcap.starts_with('C') {
+        short_word_slice = match wcap {
+            "Calds" => "CALDS",
+            "Camhs" => "CAMHS",
+            "Cofph" => "CPFPH",
+            "Cowph" => "COWPH",  
+            "Crhtt" => "CRHTT",
+            "Ctaid" => "CTAID",
+            "Ctpld" => "CTPLD",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with('D')
+    {
+        short_word_slice = match wcap {
+            "Daart" => "DAART",
+            "Dscro" => "DSCRO",
+            "Dairs" => "DAIRS",
+            "Driff" => "DRIFF",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with(['E', 'I'])
+    {
+        short_word_slice = match wcap {
+            "Epact" => "ePact",
+            "Idass" => "IDASS",
+            "Icash" => "ICASH",
+            "Icats" => "ICATS",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with(['M', 'N'])
+    {
+        short_word_slice = match wcap {
+            "Mhcas" => "MHCAS",
+            "Mhsop" => "MHSOP",
+            "Ndamh" => "NDAMH",
+            "Nelft" => "NELFT",
+            "Nepts" => "NEPTS",
+            "Nhsuk" => "NHSUK",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with(['S', 'L'])
+    {
+        short_word_slice = match wcap {
+            "Spfit" => "SPFIT",
+            "Sprpk" => "SPRPK",
+            "Suhft" => "SUHFT",
+            "Lpfit" => "LPFIT",
+            _ => wcap
+        };
+    }
+    else if wcap.starts_with(['U', 'V'])
+    {
+        short_word_slice = match wcap {
+            "Ukhsa" => "UKHSA",
+            "Under" => "under",
+            "Vhabc" => "VHABC",
+            _ => wcap
+        };
+    }
+
+    short_word_slice.to_string()
+}
+
+
+fn check_6_letter_word(wcap: &str) -> String {
+       
+    let short_word_slice = match wcap {
+        "Cmht-a" => "CMHT-A",
+        "Cmht-b" => "CMHT-B",
+        "Cmht-c" => "CMHT-C",
+        "Cypmhs" => "CYPMHS",
+
+        "E-pact" => "ePact",
+        "Opcmht" => "OPCMHT",
+        "Ycamhs" => "YCAMHS",
+        _ => wcap
+    };
+
+    short_word_slice.to_string()
+}
+
+
+fn check_7_letter_word(wcap: &str) -> String {
+       
+    let short_word_slice = match wcap {
+        "Nmepfit" => "NMEPFIT",
+        "Fp10hnc" =>"FP10HNC",
+        "Sub-icb" =>"Sub-ICB",
+        "Hst-can" =>"HST-CAN",
+        _ => wcap
+    };
+
+    short_word_slice.to_string()
+}

@@ -96,10 +96,10 @@ pub async fn import_data(data_folder: &PathBuf, pool: &Pool<Postgres>) -> Result
     let file_name = "espha.csv";
     sha_import::import_data(data_folder, file_name, pool).await?;
 
-    let file_name = "etreat.csv";
+    let file_name = "etr.csv";
     trust_import::import_data(data_folder, file_name, pool).await?;
 
-    let file_name = "etr.csv";
+    let file_name = "etreat.csv";
     treat_centre_import::import_data(data_folder, file_name, pool).await?;
 
     let file_name = "ets.csv";

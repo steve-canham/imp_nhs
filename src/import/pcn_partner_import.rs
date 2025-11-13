@@ -45,11 +45,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     
         let source: PCNPartnerLine = result?;
 
-        let mut site_name =  utils::capitalise_words(&source.ods_name);
-        if site_name.contains('(') {
-            site_name = utils::repair_brackets(&site_name)
-        };
-        site_name = utils::repair_site_name(&site_name);
+        let site_name =  utils::capitalise_site_name(&source.ods_name);
                 
         let started = utils::convert_to_date(&source.start_date);
         let ended = utils::convert_to_date(&source.end_date);
@@ -60,11 +56,11 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
             ods_code: source.ods_code,
             ods_name: site_name,
             parent_subicb_loc: source.parent_subicb_loc,
-            parent_subicb_name: source.parent_subicb_name,
+            parent_subicb_name: utils::capitalise_words(&source.parent_subicb_name),
             pcn_code: source.pcn_code,
-            pcn_name: source.pcn_name,
+            pcn_name: utils::capitalise_words(&source.pcn_name),
             pcn_parent_subicb_loc: source.pcn_parent_subicb_loc,
-            pcn_parent_subicb_name: source.pcn_parent_subicb_name,
+            pcn_parent_subicb_name: utils::capitalise_words(&source.pcn_parent_subicb_name),
             start_date: started,
             end_date: ended,
             icbs_match: icbsmatch,
