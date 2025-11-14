@@ -321,6 +321,7 @@ fn check_3_letter_word(wcap: &str) -> String {
     else if short_word.starts_with('C') {
         short_word_slice = match short_word.as_str() {
             "CLU" => "Clu",
+            "COX" => "Cox",
             "CTR" => "Ctr",
             "COW" => "Cow",
             "CWM" => "Cwm",
@@ -332,6 +333,7 @@ fn check_3_letter_word(wcap: &str) -> String {
             "DAN" => "Dan",
             "DAY" => "Day",
             "DOL" => "Dol",
+            "DON" => "Don",
             "DOT" => "Dot",
             _ => short_word_slice
         };
@@ -367,7 +369,7 @@ fn check_3_letter_word(wcap: &str) -> String {
             _ => short_word_slice
         };
     }
-    else if short_word.starts_with('H') {
+    else if short_word.starts_with(['H', 'I']) {
         short_word_slice = match short_word.as_str() {
             "HAM" => "Ham",
             "HEN" => "Hen",
@@ -375,6 +377,7 @@ fn check_3_letter_word(wcap: &str) -> String {
             "HOB" => "Hob",
             "HUB" => "Hub",
             "HPL" => "Hpl",
+            "IAN" => "Ian",
             _ => short_word_slice
         };
     }
@@ -451,6 +454,7 @@ fn check_3_letter_word(wcap: &str) -> String {
     else if short_word.starts_with(['V', 'W', 'Y']) {
         short_word_slice = match short_word.as_str() {
             "VAN" => "Van",
+            "VUE" => "Vue",
             "WAR" => "War",
             "WAT" => "Wat",
             "WAY" => "Way",
@@ -518,7 +522,9 @@ fn check_4_letter_word(wcap: &str) -> String {
         short_word_slice = match wcap {
             "Daat" => "DAAT",
             "Damh" => "DAMH",
+            "Dasa" => "DASA",
             "Ddtc" => "DDTC",
+            "Dmrc" => "DMRC",
             _ => wcap
         };
     }
@@ -554,6 +560,7 @@ fn check_4_letter_word(wcap: &str) -> String {
             "Gdpr" => "GDPR",
             "Gim1" => "GIM1",
             "Gmht" => "GMHT",
+            "Gmsc" => "GMSC",
             "Gstt" => "GSTT",
             _ => wcap
         };
@@ -672,6 +679,7 @@ fn check_4_letter_word(wcap: &str) -> String {
     else if wcap.starts_with('W')
     {
         short_word_slice = match wcap {
+            "Wecg" => "WECG",
             "Wtbc" => "WTBC",
             "Wtei" => "WTEI",
             _ => wcap
@@ -750,6 +758,7 @@ fn check_5_letter_word(wcap: &str) -> String {
     else if wcap.starts_with(['S', 'L'])
     {
         short_word_slice = match wcap {
+            "Smhpc" => "SMHPC",
             "Spfit" => "SPFIT",
             "Sprpk" => "SPRPK",
             "Suhft" => "SUHFT",
