@@ -1,5 +1,5 @@
 [package]
-name = "mk_nhs"
+name = "imp_ods"
 version = "0.1.0"
 authors = ["Steve Canham <stevecanham@outlook.com>"]
 edition = "2021"
@@ -9,7 +9,7 @@ path = "src/lib.rs"
 
 [[bin]]
 path = "src/main.rs"
-name = "mk_nhs"
+name = "imp_ods"
 
 [dependencies]
 serde = { version = "1.0.219", features = ["derive"] }

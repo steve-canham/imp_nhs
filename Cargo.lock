@@ -754,6 +754,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "imp_ods"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "csv",
+ "log",
+ "log4rs",
+ "regex",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "toml",
+]
+
+[[package]]
 name = "indexmap"
 version = "2.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -911,24 +929,6 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "mk_nhs"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "csv",
- "log",
- "log4rs",
- "regex",
- "serde",
- "serde_json",
- "sqlx",
- "thiserror",
- "tokio",
- "toml",
 ]
 
 [[package]]
