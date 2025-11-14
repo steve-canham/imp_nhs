@@ -7,7 +7,8 @@ In each case the name fields are put into Capitalised form - in the original ODS
 <br/>
 Further processing of the data, together with integration with both Scottish data, and other sources of NHS related data, is planned for the future.<br/>
 <br/>
-The source files, and the destination database tables for each, are listed below. Figures in brackets refer to the number of records on 13/11/2025<br/>
+The source files, and the destination database tables for each, are listed below. Figures in brackets refer to the number of records on 13/11/2025.<br/>
+<br/>
 <ul>
 <li>Source: eauth.csv&nbsp;&nbsp;&nbsp;&nbsp;Destination Table: ods.auths<br/>
 <i>The high level national and regional geographic organisations (25).</i><br/><br/></li>
