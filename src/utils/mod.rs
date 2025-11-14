@@ -1,10 +1,6 @@
 use std::char;
-
-//use crate::AppError;
 use chrono::NaiveDate;
 use regex::{Captures, Regex};
-
-//use log::info;
 
 
 pub fn convert_to_date(text: &str) -> Option<NaiveDate> {
@@ -17,7 +13,7 @@ pub fn convert_to_date(text: &str) -> Option<NaiveDate> {
 }
 
 
-pub fn capitalise_words(text: &str) -> String {
+pub fn capitalise_field(text: &str) -> String {
     
    // Preliminary corrections.
    // Ensure &s and brackets are properly spaced.
@@ -66,67 +62,55 @@ pub fn capitalise_words(text: &str) -> String {
             new_text = new_text + " " + &w;  // add bracketed text 'as is'
             continue;
         }
-
-        let mut c = w.chars();      // turn word into a vector of characters
-        let mut wcap = match c.next() {
-            None => String::new(),
-            Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
-        };
-
-        if wcap.len() == 2 {
-             wcap = check_2_letter_word(&wcap);
-        }
-        else if wcap.len() == 3 {
-            wcap = check_3_letter_word(&wcap);
-        }
-        else if wcap.len() == 4 {
-            wcap = check_4_letter_word(&wcap);
-        }
-        else if wcap.len() == 5 {
-            wcap = check_5_letter_word(&wcap);
-        }
-        else if wcap.len() == 6 {
-           wcap = check_6_letter_word(&wcap);
-        }
-        else if wcap.len() == 7 {
-           wcap = check_7_letter_word(&wcap);
-        }
-
-        if wcap.contains("'") {
-            wcap = wcap.replace("'", "’"); 
-        }
+        else {
             
-        if (wcap.starts_with("O’") || wcap.starts_with("D’sou")) && wcap.chars().count() > 2 {
-            let mut s = wcap.chars().collect::<Vec<char>>();
-            s[2] = s[2].to_ascii_uppercase();
-            wcap = s.iter().collect::<String>();
+            new_text = new_text + " " + &capitalise_word(w)
         }
-
-        new_text = new_text + " " + &wcap;
     }
-         
+        
     new_text = new_text.trim().to_string();
 
     if new_text.contains('(') {
        
        let re = Regex::new(r"\((?<content>[^)]+)\)").unwrap();
        new_text = re.replace_all(&new_text, |caps: &Captures| {
-            format!("({})", capitalise_words(&caps["content"].replace("-", " ")).trim())
+            format!("({})", capitalise_field(&caps["content"].replace("-", " ")))
         }).to_string();
     }
+
+    new_text = new_text.replace(" - Y - ", "-y-");
+    new_text = new_text.replace(" Y ", " y ");
+    new_text = new_text.replace("A & E ", "A&E ");
+    new_text = new_text.replace("O Cliff", "O’Cliff");
 
     new_text
     
 }
 
 
+pub fn capitalise_site_name(text: &str) -> String {
+
+    let mut new_name = capitalise_field(text);
+
+    new_name = new_name.replace("E Pact", "ePact");
+    new_name = new_name.replace("Y AMH ", "YAMH ");
+    new_name = new_name.replace("IST Floor", "1st Floor");
+    new_name = new_name.replace(" TO A ", " to a ");
+    new_name = new_name.replace(" C S U", " CSU");
+    new_name = new_name.replace("in - Reach", "Inreach");
+    new_name = new_name.replace("D - MHSOP", "DMHSOP");
+
+    new_name
+}
+
+
 pub fn get_postal_address(a1: &str, a2: &str, a3: &str, city: &str, pcode: &str) -> (String, String) {
 
-    let cap_city = capitalise_words(city);
+    let cap_city = capitalise_field(city);
 
-    let a = capitalise_words(a1);
-    let b = capitalise_words(a2);
-    let c = capitalise_words(a3);
+    let a = capitalise_field(a1);
+    let b = capitalise_field(a2);
+    let c = capitalise_field(a3);
 
     let b = if b == "" {""} else {&(", ".to_string() + &b)};
     let c = if c == "" {""} else {&(", ".to_string() + &c)};
@@ -138,7 +122,7 @@ pub fn get_postal_address(a1: &str, a2: &str, a3: &str, city: &str, pcode: &str)
 }
 
 
-pub fn repair_ampersands(text: &str) -> String {
+fn repair_ampersands(text: &str) -> String {
 
     let mut new_text = text.to_string(); 
     
@@ -160,7 +144,7 @@ pub fn repair_ampersands(text: &str) -> String {
 }
 
 
-pub fn repair_brackets(text: &str) -> String {
+fn repair_brackets(text: &str) -> String {
 
     let mut new_text = text.to_string(); 
     
@@ -184,7 +168,7 @@ pub fn repair_brackets(text: &str) -> String {
 }
 
 
-pub fn repair_hyphens(text: &str) -> String {
+fn repair_hyphens(text: &str) -> String {
 
     let mut new_text = text.to_string(); 
     
@@ -206,10 +190,10 @@ pub fn repair_hyphens(text: &str) -> String {
 
     // but some are extraneous matches and the spacing needs to be removed again
 
-    new_text = new_text.replace(" - a ", "-a ");
-    new_text = new_text.replace(" - b ", "-b ");
-    if new_text.ends_with(" - a") {new_text = new_text.replace(" - a", "-a");}
-    if new_text.ends_with(" - b") {new_text = new_text.replace(" - b", "-b");}
+    new_text = new_text.replace(" - a ", "-A ");
+    new_text = new_text.replace(" - b ", "-B ");
+    if new_text.ends_with(" - a") {new_text = new_text.replace(" - a", "-A");}
+    if new_text.ends_with(" - b") {new_text = new_text.replace(" - b", "-B");}
 
     new_text = new_text.replace(" - amh", "amh");
     new_text = new_text.replace(" - camhs", "camhs");
@@ -228,19 +212,45 @@ pub fn repair_hyphens(text: &str) -> String {
 }
 
 
-pub fn capitalise_site_name(text: &str) -> String {
+fn capitalise_word(w: &str) -> String {
 
-    let mut new_name = capitalise_words(text);
+    let mut c = w.chars();      // turn word into a vector of characters
+    let mut wcap = match c.next() {
+        None => String::new(),
+        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+    };
 
-    new_name = new_name.replace("E Pact", "ePact");
-    new_name = new_name.replace("Y AMH ", "YAMH ");
-    new_name = new_name.replace("IST Floor", "1st Floor");
-    new_name = new_name.replace("O Cliff", "O’Cliff");
-    new_name = new_name.replace(" TO A ", " to a ");
-    new_name = new_name.replace(" C S U", " CSU");
-    new_name = new_name.replace("in - Reach", "Inreach");
-    new_name = new_name.replace("D - MHSOP", "DMHSOP");
-    new_name
+    if wcap.len() == 2 {
+            wcap = check_2_letter_word(&wcap);
+    }
+    else if wcap.len() == 3 {
+        wcap = check_3_letter_word(&wcap);
+    }
+    else if wcap.len() == 4 {
+        wcap = check_4_letter_word(&wcap);
+    }
+    else if wcap.len() == 5 {
+        wcap = check_5_letter_word(&wcap);
+    }
+    else if wcap.len() == 6 {
+        wcap = check_6_letter_word(&wcap);
+    }
+    else if wcap.len() == 7 {
+        wcap = check_7_letter_word(&wcap);
+    }
+
+    if wcap.contains("'") {
+        wcap = wcap.replace("'", "’"); 
+    }
+        
+    if (wcap.starts_with("O’") || wcap.starts_with("D’sou")) && wcap.chars().count() > 2 {
+        let mut s = wcap.chars().collect::<Vec<char>>();
+        s[2] = s[2].to_ascii_uppercase();
+        wcap = s.iter().collect::<String>();
+    }
+
+    wcap
+
 }
 
 
@@ -299,6 +309,7 @@ fn check_3_letter_word(wcap: &str) -> String {
     else if short_word.starts_with('B') {
         short_word_slice = match short_word.as_str() {
             "BAR" => "Bar",
+            "BIG" => "Big",
             "BAY" => "Bay",
             "BEE" => "Bee",
             "BEN" => "Ben",
@@ -320,6 +331,7 @@ fn check_3_letter_word(wcap: &str) -> String {
         short_word_slice = match short_word.as_str() {
             "DAN" => "Dan",
             "DAY" => "Day",
+            "DOL" => "Dol",
             "DOT" => "Dot",
             _ => short_word_slice
         };
@@ -338,6 +350,7 @@ fn check_3_letter_word(wcap: &str) -> String {
     }
     else if short_word.starts_with('F') {
         short_word_slice = match short_word.as_str() {
+            "FAI" => "Fai",
             "FIR" => "Fir",
             "FLR" => "Flr",
             "FOR" => "for",
@@ -370,11 +383,13 @@ fn check_3_letter_word(wcap: &str) -> String {
             "LEA" => "Lea",
             "LEE" => "Lee",
             "LEY" => "Ley",
+            "LON" => "Lon",
             "LOW" => "Low",
             "LTD" => "Ltd",
             "MAN" => "Man",
             "MED" => "Med",
             "MID" => "Mid",
+            "MIN" => "Min",
             "MON" => "Mon",
             "MOR" => "Mor",
             "NEW" => "New",
@@ -399,12 +414,17 @@ fn check_3_letter_word(wcap: &str) -> String {
             _ => short_word_slice
         };
     }
-    else if short_word.starts_with(['R', 'S', 'T']) {
+    else if short_word.starts_with('R') {
         short_word_slice = match short_word.as_str() {
             "RED" => "Red", 
             "RAY" => "Ray",
             "ROY" => "Roy",
             "ROM" => "Rom",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('S') {
+        short_word_slice = match short_word.as_str() {
             "SAN" => "San",
             "SEA" => "Sea",
             "SIR" => "Sir",
@@ -413,8 +433,15 @@ fn check_3_letter_word(wcap: &str) -> String {
             "SUE" => "Sue",
             "SUB" => "Sub",
             "SWN" => "Swn",
+            _ => short_word_slice
+        };
+    }
+    else if short_word.starts_with('T') {
+        short_word_slice = match short_word.as_str() {
             "TAF" => "Taf",
+            "TAN" => "Tan",
             "THE" => "The",
+            "TIR" => "Tir",
             "TOR" => "Tor",
             "TOP" => "Top",
             "TYN" => "Tyn",
@@ -425,6 +452,7 @@ fn check_3_letter_word(wcap: &str) -> String {
         short_word_slice = match short_word.as_str() {
             "VAN" => "Van",
             "WAR" => "War",
+            "WAT" => "Wat",
             "WAY" => "Way",
             "WYE" => "Wye",
             "WAX" => "Wax",
@@ -478,6 +506,7 @@ fn check_4_letter_word(wcap: &str) -> String {
             "Cmht" => "CMHT",
             "Cmit" => "CMIT",
             "Cnwl" => "CNWL",
+            "Copd" => "COPD",
             "Cwmh" => "CWMH",
             "Cypd" => "CYPD",
             "Cyps" => "CYPS",
@@ -500,6 +529,7 @@ fn check_4_letter_word(wcap: &str) -> String {
             "Eip1" => "EIP1",
             "Eip2" => "EIP2",
             "Eip3" => "EIP3",
+            "Elfs" => "ELFS",
             "Elft" => "ELFT",
             "Eltt" => "ELTT",
             "Enht" => "ENHT",
@@ -547,10 +577,18 @@ fn check_4_letter_word(wcap: &str) -> String {
             _ => wcap
         };
     }
+    else if wcap.starts_with('K')
+    {
+        short_word_slice = match wcap {
+            "Kmes" => "KMES",
+            _ => wcap
+        };
+    }
     else if wcap.starts_with('M')
     {
         short_word_slice = match wcap {
             "Mhlt" => "MHLT",
+            "Miaa" => "MIAA",
             _ => wcap
         };
     }
@@ -592,6 +630,7 @@ fn check_4_letter_word(wcap: &str) -> String {
     else if wcap.starts_with('R')
     {
         short_word_slice = match wcap {
+            "Rcht" => "RCHT",
             "Rhch" => "RHCH",
             "Rmch" => "RMCH",
             _ => wcap
@@ -692,6 +731,7 @@ fn check_5_letter_word(wcap: &str) -> String {
             "Idass" => "IDASS",
             "Icash" => "ICASH",
             "Icats" => "ICATS",
+            "Isats" => "ISATS",
             _ => wcap
         };
     }
@@ -738,7 +778,6 @@ fn check_6_letter_word(wcap: &str) -> String {
         "Cmht-b" => "CMHT-B",
         "Cmht-c" => "CMHT-C",
         "Cypmhs" => "CYPMHS",
-
         "E-pact" => "ePact",
         "Opcmht" => "OPCMHT",
         "Ycamhs" => "YCAMHS",

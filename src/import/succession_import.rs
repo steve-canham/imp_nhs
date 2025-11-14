@@ -12,12 +12,12 @@ use log::info;
 
 #[derive(serde::Deserialize)]
 #[allow(dead_code)]
-pub struct SuccLine {
-	pub ods_code: String,
-	pub succ_ods_code: String,
-	pub succ_reason_code: String,
-	pub effective_date: String,
-	pub succession_indicator: String,
+struct SuccLine {
+	ods_code: String,
+	succ_ods_code: String,
+	succ_reason_code: String,
+	effective_date: String,
+	succession_indicator: String,
 }
 
 pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &Pool<Postgres>) -> Result<(), AppError> {
@@ -38,7 +38,6 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     for result in csv_rdr.deserialize() {
     
         let source: SuccLine = result?;
-            
         let eff_date = utils::convert_to_date(&source.effective_date);
          
         let succ_rec = SuccRec {

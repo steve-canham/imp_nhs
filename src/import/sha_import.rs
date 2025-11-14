@@ -12,34 +12,34 @@ use log::info;
 
 #[derive(serde::Deserialize)]
 #[allow(dead_code)]
-pub struct SHALine {
-	pub ods_code : String,
-	pub ods_name: String,
-	pub column3: String,
-	pub column4 : String,
-	pub aline1: String,
-	pub aline2: String,
-	pub aline3: String,
-	pub aline4: String,
-	pub aline5: String,
-	pub postcode: String,
-	pub open_date: String,
-	pub close_date: String,
-    pub column13: String,
-	pub column14: String,
-	pub column15: String,
-	pub column16: String,
-	pub column17 : String,
-	pub contact_tel: String,
-	pub column19: String,
-	pub column20: String,
-	pub column21: String,
-	pub amended_record: String,
-	pub column23: String,
-	pub column24: String,
-	pub column25: String,
-	pub column26: String,
-	pub column27: String,
+struct SHALine {
+	ods_code : String,
+	ods_name: String,
+	column3: String,
+	column4 : String,
+	aline1: String,
+	aline2: String,
+	aline3: String,
+	aline4: String,
+	aline5: String,
+	postcode: String,
+	open_date: String,
+	close_date: String,
+    column13: String,
+	column14: String,
+	column15: String,
+	column16: String,
+	column17 : String,
+	contact_tel: String,
+	column19: String,
+	column20: String,
+	column21: String,
+	amended_record: String,
+	column23: String,
+	column24: String,
+	column25: String,
+	column26: String,
+	column27: String,
 }
 
 
@@ -61,11 +61,9 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     for result in csv_rdr.deserialize() {
     
         let source: SHALine = result?;
-
         let site_name =  utils::capitalise_site_name(&source.ods_name);
         let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
                                                         &source.aline3, &source.aline4, &source.postcode);        
-        
         let opened = utils::convert_to_date(&source.open_date);
         let closed = utils::convert_to_date(&source.close_date);
           

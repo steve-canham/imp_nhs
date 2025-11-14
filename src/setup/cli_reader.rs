@@ -45,13 +45,13 @@
  fn parse_args(args: Vec<OsString>) -> Result<ArgMatches, clap::Error> {
  
      command!()
-         .about("Imports data from txt file and imports it into a database")
+         .about("Imports data from csv filesand imports it into a database")
          .arg(
              Arg::new("r_flag")
             .short('r')
             .long("import")
             .required(false)
-            .help("A flag signifying import from ror file to ror schema tables only")
+            .help("A flag signifying import from ods files to ods schema tables")
             .action(clap::ArgAction::SetTrue)
          )
         .arg(

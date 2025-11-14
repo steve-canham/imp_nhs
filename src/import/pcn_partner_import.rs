@@ -12,18 +12,18 @@ use log::info;
 
 #[derive(serde::Deserialize)]
 #[allow(dead_code)]
-pub struct PCNPartnerLine {
-	pub ods_code: String,
-	pub ods_name: String,
-	pub parent_subicb_loc: String,
-	pub parent_subicb_name: String,
-    pub pcn_code: String,
-	pub pcn_name: String,
-	pub pcn_parent_subicb_loc: String,
-	pub pcn_parent_subicb_name: String,
-    pub start_date: String,
-	pub end_date: String,
-	pub icbs_match: String,
+struct PCNPartnerLine {
+	ods_code: String,
+	ods_name: String,
+	parent_subicb_loc: String,
+	parent_subicb_name: String,
+    pcn_code: String,
+	pcn_name: String,
+	pcn_parent_subicb_loc: String,
+	pcn_parent_subicb_name: String,
+    start_date: String,
+	end_date: String,
+	icbs_match: String,
 }
 
 pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &Pool<Postgres>) -> Result<(), AppError> {
@@ -44,23 +44,20 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     for result in csv_rdr.deserialize() {
     
         let source: PCNPartnerLine = result?;
-
         let site_name =  utils::capitalise_site_name(&source.ods_name);
-                
         let started = utils::convert_to_date(&source.start_date);
         let ended = utils::convert_to_date(&source.end_date);
-
         let icbsmatch = if source.icbs_match == "TRUE" {true} else {false};
       
         let pcn_partner_rec = PCNPartnerRec {
             ods_code: source.ods_code,
             ods_name: site_name,
             parent_subicb_loc: source.parent_subicb_loc,
-            parent_subicb_name: utils::capitalise_words(&source.parent_subicb_name),
+            parent_subicb_name: utils::capitalise_field(&source.parent_subicb_name),
             pcn_code: source.pcn_code,
-            pcn_name: utils::capitalise_words(&source.pcn_name),
+            pcn_name: utils::capitalise_field(&source.pcn_name),
             pcn_parent_subicb_loc: source.pcn_parent_subicb_loc,
-            pcn_parent_subicb_name: utils::capitalise_words(&source.pcn_parent_subicb_name),
+            pcn_parent_subicb_name: utils::capitalise_field(&source.pcn_parent_subicb_name),
             start_date: started,
             end_date: ended,
             icbs_match: icbsmatch,

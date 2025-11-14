@@ -12,19 +12,19 @@ use log::info;
 
 #[derive(serde::Deserialize)]
 #[allow(dead_code)]
-pub struct PCNLine {
-	pub ods_code: String,
-	pub ods_name: String,
-	pub subicb_loc: String,
-	pub subicb_name: String,
-    pub open_date: String,
-	pub close_date: String,
-	pub aline1: String,
-	pub aline2: String,
-	pub aline3: String,
-	pub aline4: String,
-	pub aline5: String,
-	pub postcode: String,
+struct PCNLine {
+	ods_code: String,
+	ods_name: String,
+	subicb_loc: String,
+	subicb_name: String,
+    open_date: String,
+	close_date: String,
+	aline1: String,
+	aline2: String,
+	aline3: String,
+	aline4: String,
+	aline5: String,
+	postcode: String,
 }
 
 
@@ -46,7 +46,6 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     for result in csv_rdr.deserialize() {
     
         let source: PCNLine = result?;
-
         let site_name =  utils::capitalise_site_name(&source.ods_name);
         let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
                                                         &source.aline3, &source.aline4, &source.postcode);       
@@ -57,7 +56,7 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
             ods_code: source.ods_code,
             ods_name: site_name,
             subicb_loc: source.subicb_loc,
-            subicb_name: utils::capitalise_words(&source.subicb_name),
+            subicb_name: utils::capitalise_field(&source.subicb_name),
             open_date: opened,
             close_date: closed,
             city: cap_city,

@@ -12,34 +12,34 @@ use log::info;
 
 #[derive(serde::Deserialize)]
 #[allow(dead_code)]
-pub struct GPLine {
-	pub ods_code : String,
-	pub ods_name: String,
-	pub grouping: String,
-	pub health_geog : String,
-	pub aline1: String,
-	pub aline2: String,
-	pub aline3: String,
-	pub aline4: String,
-	pub aline5: String,
-	pub postcode: String,
-	pub open_date: String,
-	pub close_date: String,
-    pub status: String,
-	pub subtype_code: String,
-	pub commissioner: String,
-	pub join_provpurch_date: String,
-	pub left_provpurch_date : String,
-	pub contact_tel: String,
-	pub column19: String,
-	pub column20: String,
-	pub column21: String,
-	pub amended_record: String,
-	pub column23: String,
-	pub provpurch: String,
-	pub column25: String,
-	pub prescribing_setting: String,
-	pub column27: String,
+struct GPLine {
+	ods_code : String,
+	ods_name: String,
+	grouping: String,
+	health_geog : String,
+	aline1: String,
+	aline2: String,
+	aline3: String,
+	aline4: String,
+	aline5: String,
+	postcode: String,
+	open_date: String,
+	close_date: String,
+    status: String,
+	subtype_code: String,
+	commissioner: String,
+	join_provpurch_date: String,
+	left_provpurch_date : String,
+	contact_tel: String,
+	column19: String,
+	column20: String,
+	column21: String,
+	amended_record: String,
+	column23: String,
+	provpurch: String,
+	column25: String,
+	prescribing_setting: String,
+	column27: String,
 }
 
 
@@ -62,14 +62,11 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     for result in csv_rdr.deserialize() {
     
         let source: GPLine = result?;
-
         let site_name =  utils::capitalise_site_name(&source.ods_name);
         let (cap_city, postal_address) = utils::get_postal_address(&source.aline1, &source.aline2, 
                                                         &source.aline3, &source.aline4, &source.postcode);        
-        
         let opened = utils::convert_to_date(&source.open_date);
         let closed = utils::convert_to_date(&source.close_date);
-
         let joined = utils::convert_to_date(&source.join_provpurch_date);
         let left = utils::convert_to_date(&source.left_provpurch_date);
         

@@ -12,12 +12,12 @@ use log::info;
 
 #[derive(serde::Deserialize)]
 #[allow(dead_code)]
-pub struct LinkedNIGPLine {
-	pub ods_code: String,
-	pub parent_org: String,
-	pub parent_org_type: String,
-	pub join_parent_date: String,
-	pub left_parent_date: String,
+struct LinkedNIGPLine {
+	ods_code: String,
+	parent_org: String,
+	parent_org_type: String,
+	join_parent_date: String,
+	left_parent_date: String,
 }
 
 pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &Pool<Postgres>) -> Result<(), AppError> {
@@ -38,7 +38,6 @@ pub async fn import_data(data_folder: &PathBuf, source_file_name: &str, pool: &P
     for result in csv_rdr.deserialize() {
     
         let source: LinkedNIGPLine = result?;
-
         let joined = utils::convert_to_date(&source.join_parent_date);
         let left = utils::convert_to_date(&source.left_parent_date);
         
